@@ -46,19 +46,6 @@ The default values for the variables are set in [`defaults/main.yml`](https://gi
 
 ```yaml
 ---
-# IMPORTANT
-# You should configure the "watchtower_docker_ssl_email" to an Email you control
-# Default to redirecteing every http (Port 80) traffic to https (Port 443)
-# Creates certificates with letsencrypt. So make sure your dns is working
-# will automatically create an proxy for each container in the same network (defaults to web)
-# the target container needs a specific label set inside the compose file like:
-#
-# - "watchtower.enable=true"
-# - "watchtower.http.routers.foundry.entryPoints=https"
-# - "watchtower.http.routers.foundry.rule=Host(`foundry.example.com`)"
-# - "watchtower.http.routers.foundry.tls.certResolver=letsEncrypt"
-# - "watchtower.http.routers.foundry.tls=true"
-
 # General config
 watchtower_docker_network_name: "web"
 watchtower_docker_base_path: "/opt"
@@ -97,7 +84,8 @@ watchtower_docker_volumes:
 watchtower_docker_ports: []
 #  - "8080:8080"
 watchtower_docker_labels:
-  - "com.centurylinklabs.watchtower.enable=true"
+  - "traefik.enable=false"
+
 ```
 
 ## [Requirements](#requirements)
