@@ -1,0 +1,53 @@
+---
+# IMPORTANT
+# You should configure the "watchtower_docker_ssl_email" to an Email you control
+# Default to redirecteing every http (Port 80) traffic to https (Port 443)
+# Creates certificates with letsencrypt. So make sure your dns is working
+# will automatically create an proxy for each container in the same network (defaults to web)
+# the target container needs a specific label set inside the compose file like:
+#
+# - "watchtower.enable=true"
+# - "watchtower.http.routers.foundry.entryPoints=https"
+# - "watchtower.http.routers.foundry.rule=Host(`foundry.example.com`)"
+# - "watchtower.http.routers.foundry.tls.certResolver=letsEncrypt"
+# - "watchtower.http.routers.foundry.tls=true"
+
+# General config
+watchtower_docker_network_name: "web"
+watchtower_docker_base_path: "/opt"
+watchtower_docker_timezone: "Europe/Berlin"
+
+# User/Group of the stack. Everything is mapped to this, instead of root.
+watchtower_docker_user: "homelab"
+watchtower_docker_uid: "900"
+watchtower_docker_group: "homelab"
+watchtower_docker_gid: "900"
+watchtower_docker_user_system: true
+
+# which container version to install
+# can also be latest
+watchtower_docker_version: "containrrr/watchtower:latest"
+
+# additional docker compose environment variables
+# https://containrrr.dev/watchtower/arguments/
+watchtower_docker_environment_variables:
+  - "WATCHTOWER_CLEANUP: true"             # Removes old images after updating
+  - "WATCHTOWER_INCLUDE_RESTARTING: true"  # Will also include restarting containers.
+  - "WATCHTOWER_ROLLING_RESTART: true"     # Restart one image at time instead of stopping and starting all at once
+  - "WATCHTOWER_POLL_INTERVAL: 3600"       # check every hour for image updates
+  # - "WATCHTOWER_LABEL_ENABLE: true"      # Monitor and update containers that have a com.centurylinklabs.watchtower.enable label set to true, else update all
+  # Watchtower - Notifications
+  - "WATCHTOWER_LIFECYCLE_HOOKS: true"     # to allow managing of lifecycle hooks via labels (https://containrrr.dev/watchtower/lifecycle-hooks/#executing_commands_before_and_after_updating)
+  # - "WATCHTOWER_NOTIFICATION_REPORT: true"
+  # - "WATCHTOWER_NOTIFICATION_URL: discord://token@channel"
+  # metrics
+  - "WATCHTOWER_HTTP_API_METRICS: true"    # Enables a metrics endpoint
+  - 'WATCHTOWER_HTTP_API_TOKEN: SuperSecretToken'
+watchtower_docker_volumes:
+  - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+# which port to expose. can be empty if used with watchtower for example
+watchtower_docker_ports: []
+#  - "8080:8080"
+watchtower_docker_labels:
+  - "com.centurylinklabs.watchtower.enable=true"

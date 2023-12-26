@@ -1,0 +1,10 @@
+---
+- name: watchtower_systemd_reload
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: watchtower_restart
+  ansible.builtin.service:
+    name: "watchtower"
+    state: restarted
+    enabled: true
