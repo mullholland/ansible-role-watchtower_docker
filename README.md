@@ -102,7 +102,6 @@ watchtower_docker_ports: []
 #  - "8080:8080"
 watchtower_docker_labels:
   - "traefik.enable=false"
-
 ```
 
 ## [Requirements](#requirements)
