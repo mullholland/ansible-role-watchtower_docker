@@ -3,4 +3,5 @@
 *.swp
 .tox
 .cache
+.ansible
 .DS_Store

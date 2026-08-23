@@ -11,3 +11,33 @@
     - role: mullholland.docker
     - role: mullholland.repository_epel
     - role: mullholland.pip
+
+  tasks:
+    # mullholland.pip no longer installs pip packages itself (see
+    # https://github.com/mullholland/ansible-role-pip - removed due to PEP 668),
+    # so the community.docker modules used below need their Python dependency
+    # installed here directly.
+    - name: Install python dependencies for community.docker modules
+      ansible.builtin.pip:
+        name: "{{ pip_packages }}"
+        state: present
+
+    # Nested overlay2-on-overlay2 mounts fail on some container backends
+    # (e.g. OrbStack): "failed to mount ...: fstype: overlay ... invalid
+    # argument". vfs avoids that at the cost of slower image pulls, which is
+    # an acceptable trade-off for a molecule test instance.
+    - name: Configure inner dockerd to use the vfs storage driver
+      ansible.builtin.copy:
+        dest: /etc/docker/daemon.json
+        content: |
+          {
+            "storage-driver": "vfs"
+          }
+        mode: "0644"
+      notify: restart docker
+
+  handlers:
+    - name: restart docker
+      ansible.builtin.systemd:
+        name: docker
+        state: restarted

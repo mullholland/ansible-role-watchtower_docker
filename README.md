@@ -1,6 +1,11 @@
 # [Ansible role watchtower_docker](#watchtower_docker)
 
-Installs and configures watchtower container based on official watchtower docker container
+**Note**
+[containrrr/watchtower](https://github.com/containrrr/watchtower) (the default image used by this role) is archived and no longer maintained.
+
+---
+
+Installs and configures watchtower container based on the official watchtower docker container
 
 |GitHub|Downloads|Version|
 |------|---------|-------|
@@ -36,7 +41,19 @@ The machine needs to be prepared. In CI this is done using [`molecule/default/pr
     - role: mullholland.docker
     - role: mullholland.repository_epel
     - role: mullholland.pip
+
+  tasks:
+    # mullholland.pip no longer installs pip packages itself (see
+    # https://github.com/mullholland/ansible-role-pip - removed due to PEP 668),
+    # so the community.docker modules used below need their Python dependency
+    # installed here directly.
+    - name: Install python dependencies for community.docker modules
+      ansible.builtin.pip:
+        name: "{{ pip_packages }}"
+        state: present
 ```
+
+The `docker` pip package satisfies the `community.docker` collection modules (e.g. `community.docker.docker_network`) that this role uses.
 
 
 
