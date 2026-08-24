@@ -27,8 +27,10 @@ The machine needs to be prepared. In CI this is done using [`molecule/default/pr
   hosts: all
   gather_facts: true
   vars:
+    # Pinned >=7.1.0: older docker-py releases break with newer requests
+    # ("Not supported URL scheme http+docker") - https://github.com/docker/docker-py/issues/3113
     pip_packages:
-      - "docker"
+      - "docker>=7.1.0"
 
   roles:
     - role: mullholland.docker
