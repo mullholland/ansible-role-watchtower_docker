@@ -5,4 +5,4 @@
 repository:
   description: Installs and configures watchtower container based on official watchtower docker container
   homepage: https://mullholland.net
-  topics: cloud, development, webserver, watchtower, proxy, ansible, molecule, tox, playbook
+  topics: cloud, development, webserver, watchtower, proxy, ansible, molecule, playbook

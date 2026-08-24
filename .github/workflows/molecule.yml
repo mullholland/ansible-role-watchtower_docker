@@ -10,48 +10,44 @@ on:
     tags_ignore:
       - '*'
   pull_request:
+    branches:
+      - main
   schedule:
     - cron: '45 22 23 * *'
 
 jobs:
   lint:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: ansible-lint
-        uses: ansible-community/ansible-lint-action@main
+        uses: ansible/ansible-lint@main
   test:
     needs:
       - lint
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         config:
-          - image: "centos"
-            tag: "7"
-          - image: "centos"
+          - image: "redhat"
             tag: "8"
-          - image: "centos"
-            tag: "latest"
-          - image: "fedora"
-            tag: "38"
-          - image: "fedora"
-            tag: "latest"
+          - image: "redhat"
+            tag: "9"
+          - image: "redhat"
+            tag: "10"
           - image: "ubuntu"
-            tag: "latest"
+            tag: "resolute"
           - image: "ubuntu"
-            tag: "focal"
+            tag: "noble"
           - image: "ubuntu"
-            tag: "bionic"
+            tag: "jammy"
           - image: "debian"
-            tag: "latest"
-          - image: "debian"
-            tag: "bullseye"
+            tag: "trixie"
     steps:
       - name: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: "${{ github.repository }}"
       # - name: disable apparmor for mysql

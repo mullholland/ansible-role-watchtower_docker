@@ -1,5 +1,5 @@
 ---
-- name: watchtower | set application facts
+- name: watchtower | Set application facts
   ansible.builtin.set_fact:
     app_name: "watchtower"
     app_image: "{{ watchtower_docker_version }}"
@@ -24,20 +24,20 @@
     state: directory
 
 
-- name: watchtower | get docker executable path
+- name: watchtower | Get docker executable path
   ansible.builtin.command:
     cmd: "which docker"
   changed_when: false
   register: watchtower_docker_executable_path
 
-- name: "watchtower | create docker-compose.yml"
+- name: "watchtower | Create docker-compose.yml"
   ansible.builtin.template:
     src: "docker-compose.yml.j2"
     dest: "{{ app_base_path }}/{{ app_name }}/docker-compose.yml"
     mode: "0640"
     owner: "{{ app_user }}"
     group: "{{ app_group }}"
-  notify: watchtower_restart
+  notify: Watchtower restart
 
 - name: "watchtower | Create systemd service"
   ansible.builtin.template:
@@ -47,5 +47,5 @@
     owner: "root"
     group: "root"
   notify:
-    - watchtower_systemd_reload
-    - watchtower_restart
+    - Watchtower systemd reload
+    - Watchtower restart

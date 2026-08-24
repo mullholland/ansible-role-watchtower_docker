@@ -15,7 +15,7 @@ repos:
           - -c=.yamllint
 
   - repo: https://github.com/robertdebock/pre-commit
-    rev: v1.5.2  # v1.5.3 breaks ansible_role_find_unused_variable: grep_folder="*" is quoted in the grep call, so it looks for a literal file named "*" instead of expanding, and every variable is falsely reported as unused
+    rev: v1.5.2
     hooks:
       - id: ansible_role_find_unused_variable
       - id: ansible_role_find_empty_files
@@ -25,9 +25,8 @@ repos:
       - id: ansible_role_find_horizontal_when
 
   - repo: https://github.com/ansible-community/ansible-lint.git
-    rev: v26.8.0  # put latest release tag from https://github.com/ansible-community/ansible-lint/releases/
+    rev: v26.4.0  # put latest release tag from https://github.com/ansible-community/ansible-lint/releases/
     hooks:
       - id: ansible-lint
         files: \.(yaml|yml)$
-        verbose: true
-        args: ["-p", "./"]
+        args: ["--format=pep8", "./"]
