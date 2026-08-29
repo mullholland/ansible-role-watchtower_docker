@@ -1,7 +1,12 @@
 ---
-#
-# Ansible managed
-#
+# EXPERIMENTAL: this workflow deviates from the shared ansible-generator
+# template. It runs molecule directly on the GitHub-hosted runner (pinned
+# versions from molecule/requirements.txt) instead of via
+# robertdebock/molecule-action@6.0.1, whose bundled ansible-core/collections
+# are too old for several current distro releases (dnf5 on Fedora, GnuPG 2.4
+# on EL10, requests>=2.32 with community.docker). See
+# https://github.com/mother-of-all-self-hosting/ansible-role-healthchecks/blob/main/.github/workflows/molecule.yml
+# for the pattern this is based on.
 
 name: Molecule
 
@@ -61,18 +66,34 @@ jobs:
             tag: "9"
           - image: "centos"
             tag: "10"
+    env:
+      namespace: mullholland
+      image: ${{ matrix.config.image }}
+      tag: ${{ matrix.config.tag }}
+      PY_COLORS: "1"
+      ANSIBLE_FORCE_COLOR: "1"
     steps:
       - name: checkout
         uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
         with:
-          path: "${{ github.repository }}"
-      # - name: disable apparmor for mysql
-      #   run: sudo ln -s /etc/apparmor.d/usr.sbin.mysqld /etc/apparmor.d/disable/
-      # - name: parse apparmor for mysql
-      #   run: sudo apparmor_parser -R /etc/apparmor.d/usr.sbin.mysqld
-      - name: molecule
-        uses: robertdebock/molecule-action@6.0.1
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: molecule/requirements.txt
+
+      - name: Install Python dependencies
+        run: pip install -r molecule/requirements.txt
+
+      - name: Install Ansible collections
+        run: ansible-galaxy collection install community.docker ansible.posix
+
+      - name: Cache Ansible collections
+        uses: actions/cache@v4
         with:
-          namespace: mullholland
-          image: ${{ matrix.config.image }}
-          tag: ${{ matrix.config.tag }}
+          path: ~/.ansible/collections
+          key: ansible-collections-community-docker-ansible-posix
+
+      - name: Run Molecule
+        run: molecule test
