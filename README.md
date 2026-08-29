@@ -16,7 +16,7 @@ This example is taken from [`molecule/default/converge.yml`](https://github.com/
   gather_facts: true
 
   roles:
-    - role: "mullholland.watchtower_docker"
+    - role: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}"
 ```
 
 The machine needs to be prepared. In CI this is done using [`molecule/default/prepare.yml`](https://github.com/mullholland/ansible-role-watchtower_docker/blob/master/molecule/default/prepare.yml):
@@ -27,8 +27,6 @@ The machine needs to be prepared. In CI this is done using [`molecule/default/pr
   hosts: all
   gather_facts: true
   vars:
-    # Pinned >=7.1.0: older docker-py releases break with newer requests
-    # ("Not supported URL scheme http+docker") - https://github.com/docker/docker-py/issues/3113
     pip_packages:
       - "docker>=7.1.0"
 
@@ -45,10 +43,6 @@ The machine needs to be prepared. In CI this is done using [`molecule/default/pr
       when: (ansible_distribution == "Debian" and ansible_distribution_major_version | int >= 12) or
             (ansible_distribution == "Ubuntu" and ansible_distribution_major_version | int >= 24)
 
-    # mullholland.pip only installs the pip binary itself, it no longer
-    # installs pip packages (removed due to PEP 668), so the
-    # community.docker modules used below need their Python dependency
-    # installed here directly on every other distribution.
     - name: Install python dependencies for community.docker modules
       ansible.builtin.pip:
         name: "{{ pip_packages }}"

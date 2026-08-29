@@ -1,12 +1,7 @@
 ---
-# EXPERIMENTAL: this workflow deviates from the shared ansible-generator
-# template. It runs molecule directly on the GitHub-hosted runner (pinned
-# versions from molecule/requirements.txt) instead of via
-# robertdebock/molecule-action@6.0.1, whose bundled ansible-core/collections
-# are too old for several current distro releases (dnf5 on Fedora, GnuPG 2.4
-# on EL10, requests>=2.32 with community.docker). See
-# https://github.com/mother-of-all-self-hosting/ansible-role-healthchecks/blob/main/.github/workflows/molecule.yml
-# for the pattern this is based on.
+#
+# Ansible managed
+#
 
 name: Molecule
 
@@ -36,11 +31,10 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          # "redhat" (mullholland/docker-redhat-systemd, built on UBI) is
-          # intentionally not tested: UBI10's redistributable repos don't
-          # carry iptables-nft/iptables, which docker-ce requires - a gap
-          # specific to UBI, not real RHEL. Rocky/AlmaLinux/CentOS Stream
-          # below provide working EL9/EL10 coverage instead.
+          - image: "fedora"
+            tag: "42"
+          - image: "fedora"
+            tag: "43"
           - image: "rockylinux"
             tag: "8"
           - image: "rockylinux"
@@ -85,14 +79,11 @@ jobs:
       - name: Install Python dependencies
         run: pip install -r molecule/requirements.txt
 
-      - name: Install Ansible collections
-        run: ansible-galaxy collection install community.docker ansible.posix
-
       - name: Cache Ansible collections
         uses: actions/cache@v4
         with:
           path: ~/.ansible/collections
-          key: ansible-collections-community-docker-ansible-posix
+          key: ansible-collections-${{ hashFiles('requirements.yml') }}
 
       - name: Run Molecule
         run: molecule test
