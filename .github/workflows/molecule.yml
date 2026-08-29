@@ -36,12 +36,11 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - image: "redhat"
-            tag: "8"
-          - image: "redhat"
-            tag: "9"
-          - image: "redhat"
-            tag: "10"
+          # "redhat" (mullholland/docker-redhat-systemd, built on UBI) is
+          # intentionally not tested: UBI10's redistributable repos don't
+          # carry iptables-nft/iptables, which docker-ce requires - a gap
+          # specific to UBI, not real RHEL. Rocky/AlmaLinux/CentOS Stream
+          # below provide working EL9/EL10 coverage instead.
           - image: "rockylinux"
             tag: "8"
           - image: "rockylinux"
@@ -79,7 +78,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: "3.13"
+          python-version: "3.14"
           cache: pip
           cache-dependency-path: molecule/requirements.txt
 
