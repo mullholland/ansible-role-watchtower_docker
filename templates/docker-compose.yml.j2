@@ -11,6 +11,10 @@ services:
     hostname: "{{ app_name }}"
     init: true
     restart: always
+{% if watchtower_docker_logging %}
+    logging:
+      {{ watchtower_docker_logging | to_nice_yaml(indent=2) | indent(6) | trim }}
+{% endif %}
     volumes:
 {% for app_volume in app_volumes %}
       - {{ app_volume }}
